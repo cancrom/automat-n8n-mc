@@ -1,0 +1,79 @@
+{
+  "name": "Frontend Webhook",
+  "nodes": [
+    {
+      "parameters": {
+        "path": "bulk-update-trigger",
+        "httpMethod": "POST",
+        "responseMode": "lastNode"
+      },
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        250,
+        300
+      ],
+      "webhookId": "your-webhook-id"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{$json.headers['x-api-token']}}",
+              "value2": "={{$env.API_TOKEN}}"
+            }
+          ]
+        }
+      },
+      "name": "Check API Token",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        450,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "workflowId": "4",
+        "file": "={{$binary.data}}"
+      },
+      "name": "Execute Bulk Update",
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1,
+      "position": [
+        650,
+        300
+      ]
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Check API Token",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check API Token": {
+      "main": [
+        [
+          {
+            "node": "Execute Bulk Update",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {},
+  "id": "5"
+}

@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Mise à jour des stocks MC App</title>
+  <style>
+    body { font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; }
+    .error { color: red; }
+    .success { color: green; }
+  </style>
+</head>
+<body>
+  <h1>Mise à jour des stocks</h1>
+  <form id="uploadForm">
+    <input type="file" name="data" accept=".xlsx" required><br><br>
+    <input type="text" name="apiToken" placeholder="Token API" required><br><br>
+    <input type="submit" value="Lancer la mise à jour">
+  </form>
+  <p id="response"></p>
+
+  <script>
+    document.getElementById('uploadForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const formData = new FormData(e.target);
+      const file = formData.get('data');
+      const responseElement = document.getElementById('response');
+
+      // Validation côté client
+      if (!file.name.endsWith('.xlsx')) {
+        responseElement.textContent = 'Erreur : Veuillez sélectionner un fichier .xlsx';
+        responseElement.className = 'error';
+        return;
+      }
+      if (file.size > 10 * 1024 * 1024) {
+        responseElement.textContent = 'Erreur : Le fichier est trop volumineux (max 10 Mo)';
+        responseElement.className = 'error';
+        return;
+      }
+
+      responseElement.textContent = 'Envoi en cours...';
+      responseElement.className = '';
+
+      try {
+        const response = await fetch('http://<votre-domaine>:5678/webhook/bulk-update-trigger', {
+          method: 'POST',
+          body: formData
+        });
+        const result = await response.json();
+        responseElement.textContent = result.message;
+        responseElement.className = response.ok ? 'success' : 'error';
+
+        // Suivi de l'état (optionnel)
+        if (response.ok && result.taskId) {
+          const statusInterval = setInterval(async () => {
+            const statusResponse = await fetch(`http://<votre-domaine>:5678/webhook/task-status/${result.taskId}`);
+            const status = await statusResponse.json();
+            responseElement.textContent = `État : ${status.status}`;
+            if (status.status === 'completed' || status.status === 'failed') {
+              clearInterval(statusInterval);
+            }
+          }, 5000);
+        }
+      } catch (error) {
+        responseElement.textContent = 'Erreur de communication avec le serveur.';
+        responseElement.className = 'error';
+      }
+    });
+  </script>
+</body>
+</html>

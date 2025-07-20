@@ -1,0 +1,89 @@
+{
+  "name": "Authentication",
+  "nodes": [
+    {
+      "parameters": {},
+      "name": "Start",
+      "type": "n8n-nodes-base.start",
+      "typeVersion": 1,
+      "position": [
+        250,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "url": "https://web.mc.app",
+        "actions": {
+          "actions": [
+            {
+              "action": "screenshot",
+              "selector": "canvas",
+              "options": {
+                "path": "/home/node/.n8n/qrcode.png"
+              }
+            },
+            {
+              "action": "waitForNavigation",
+              "options": {
+                "timeout": 120000
+              }
+            },
+            {
+              "action": "getCookies",
+              "options": {}
+            }
+          ]
+        },
+        "options": {}
+      },
+      "name": "Puppeteer",
+      "type": "n8n-nodes-puppeteer.puppeteer",
+      "typeVersion": 1,
+      "position": [
+        450,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "fileName": "cookies.json",
+        "data": "={{$node[\"Puppeteer\"].json.cookies}}"
+      },
+      "name": "Write Cookies",
+      "type": "n8n-nodes-base.writeBinaryFile",
+      "typeVersion": 1,
+      "position": [
+        650,
+        300
+      ]
+    }
+  ],
+  "connections": {
+    "Start": {
+      "main": [
+        [
+          {
+            "node": "Puppeteer",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Puppeteer": {
+      "main": [
+        [
+          {
+            "node": "Write Cookies",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {},
+  "id": "1"
+}

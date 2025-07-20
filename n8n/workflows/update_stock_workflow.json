@@ -1,0 +1,112 @@
+{
+  "name": "Update Product Stock",
+  "nodes": [
+    {
+      "parameters": {
+        "path": "/home/node/.n8n/cookies.json"
+      },
+      "name": "Read Cookies",
+      "type": "n8n-nodes-base.readBinaryFile",
+      "typeVersion": 1,
+      "position": [
+        450,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "url": "https://web.mc.app/products",
+        "actions": {
+          "actions": [
+            {
+              "action": "setCookies",
+              "cookies": "={{JSON.parse($binary.data.toString())}}"
+            },
+            {
+              "action": "type",
+              "selector": "input[name='search']",
+              "text": "={{$json.productSku}}",
+              "options": {}
+            },
+            {
+              "action": "click",
+              "selector": "button[type='submit']",
+              "options": {}
+            },
+            {
+              "action": "waitForNavigation",
+              "options": {}
+            },
+            {
+              "action": "click",
+              "selector": ".product-row",
+              "options": {}
+            },
+            {
+              "action": "waitForNavigation",
+              "options": {}
+            },
+            {
+              "action": "type",
+              "selector": "input[name='stock']",
+              "text": "={{$json.newStock}}",
+              "options": {
+                "clear": true
+              }
+            },
+            {
+              "action": "click",
+              "selector": "button[type='submit']",
+              "options": {}
+            }
+          ]
+        },
+        "options": {}
+      },
+      "name": "Puppeteer",
+      "type": "n8n-nodes-puppeteer.puppeteer",
+      "typeVersion": 1,
+      "position": [
+        650,
+        300
+      ]
+    },
+    {
+      "parameters": {},
+      "name": "Start",
+      "type": "n8n-nodes-base.start",
+      "typeVersion": 1,
+      "position": [
+        250,
+        300
+      ]
+    }
+  ],
+  "connections": {
+    "Read Cookies": {
+      "main": [
+        [
+          {
+            "node": "Puppeteer",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Start": {
+      "main": [
+        [
+          {
+            "node": "Read Cookies",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {},
+  "id": "2"
+}
