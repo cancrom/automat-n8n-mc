@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="fr">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Mappage des Colonnes - Bot de Stock</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="header">Étape 2 : Mappage des Colonnes</div>
+    <div class="container">
+        <h2>Faire correspondre les colonnes de votre fichier</h2>
+        <p>Votre fichier <b>{{ filename }}</b> a été téléversé. Veuillez indiquer quelles colonnes correspondent au SKU du produit et à la nouvelle quantité.</p>
+
+        <form method="post" action="{{ url_for('process_batch') }}">
+            <input type="hidden" name="filename" value="{{ filename }}">
+
+            <div>
+                <label for="sku_col">Colonne contenant le SKU :</label>
+                <select id="sku_col" name="sku_col" required>
+                    <option value="">-- Choisissez une colonne --</option>
+                    {% for header in headers %}
+                    <option value="{{ header }}">{{ header }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div>
+                <label for="quantity_col">Colonne contenant la Quantité :</label>
+                <select id="quantity_col" name="quantity_col" required>
+                    <option value="">-- Choisissez une colonne --</option>
+                    {% for header in headers %}
+                    <option value="{{ header }}">{{ header }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <button type="submit">Lancer le Traitement</button>
+        </form>
+    </div>
+</body>
+</html>

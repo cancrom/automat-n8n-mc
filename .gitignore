@@ -1,0 +1,17 @@
+# Fichiers de session Playwright
+playwright/.auth/
+
+# Fichiers de cache Python
+__pycache__/
+*.pyc
+
+# Fichiers de trace Playwright
+trace.zip
+
+# Environnement virtuel
+.venv/
+venv/
+ENV/
+
+# Fichiers téléversés
+uploads/
